@@ -33,7 +33,7 @@ A arquitetura da API baseia-se em **REST**, utilizando métodos HTTP padrão e �
 
 ---
 
-### 🚀 Começando
+## 🚀 Getting Started
 
 Siga os passos abaixo para ter uma cópia do projeto rodando localmente.
 
@@ -47,12 +47,13 @@ Siga os passos abaixo para ter uma cópia do projeto rodando localmente.
 
 1.  Clone o repositório para sua máquina local:
     ```bash
-    git clone [https://github.com/MatheusFerGo/CashFlow.git](https://github.com/MatheusFerGo/CashFlow.git)
+    git clone https://github.com/MatheusFerGo/CashFlow.git
     ```
 
 2.  Navegue até a pasta do projeto:
     ```bash
     cd CashFlow
     ```
+3. Preencha as informações no arquivo `appsettings.Development.json`.
 
-3.  Acesse a documentação Swagger para testar os endpoints: `http://localhost:<SUA_PORTA>/swagger`.
+4.  Acesse a documentação Swagger para testar os endpoints: `http://localhost:<SUA_PORTA>/swagger`.
