@@ -1,20 +1,52 @@
-﻿using CashFlow.Domain.Reports;
+﻿using CashFlow.Domain.Extensions;
+using CashFlow.Domain.Reports;
+using CashFlow.Domain.Repositories.Expenses;
 using ClosedXML.Excel;
 
 namespace CashFlow.Application.UseCases.Expenses.Reports.Excel;
 public class GenerateExpensesReportExcelUseCase : IGenerateExpensesReportExcelUseCase
 {
+    private const string CURRENCY_FORMAT = "R$";
+    private readonly IExpensesReadOnlyRepository _repository;
+
+    public GenerateExpensesReportExcelUseCase(IExpensesReadOnlyRepository repository)
+    {
+        _repository = repository;
+    }
+
     public async Task<byte[]> Execute(DateOnly month)
     {
-        var workbook = new XLWorkbook();
+        var expenses = await _repository.FilterByMonth(month);
+        if (expenses.Count == 0)
+        {
+            return [];
+        }
 
-        workbook.Author = "Welisson Arley";
+        using var workbook = new XLWorkbook();
+
+        workbook.Author = "Matheus Fernandes";
         workbook.Style.Font.FontSize = 12;
-        workbook.Style.Font.FontName = "Times New Roman";
+        workbook.Style.Font.FontName = "Arial";
 
         var worksheet = workbook.Worksheets.Add(month.ToString("Y"));
 
         InsertHeader(worksheet);
+
+        var currentRow = 2;
+        foreach (var expense in expenses)
+        {
+            worksheet.Cell(currentRow, "A").Value = expense.Title;
+            worksheet.Cell(currentRow, "B").Value = expense.Date;
+            worksheet.Cell(currentRow, "C").Value = expense.PaymentType.PaymentTypeToString();
+            worksheet.Cell(currentRow, "D").Value = expense.Amount;
+            worksheet.Cell(currentRow, "E").Value = expense.Description;
+
+            worksheet.Cell(currentRow, "D").Style.NumberFormat.Format = $"{CURRENCY_FORMAT} #,##0.00";
+
+            currentRow++;
+        }
+
+        worksheet.Columns().AdjustToContents();
 
         var file = new MemoryStream();
         workbook.SaveAs(file);
